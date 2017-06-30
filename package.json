@@ -1,0 +1,35 @@
+{
+  "name": "heroes-server",
+  "version": "1.0.0",
+  "description": "nextzy practice angular2",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuntjw/heroes-server.git"
+  },
+  "keywords": [
+    "dota",
+    "heroes"
+  ],
+  "author": "nuntjw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nuntjw/heroes-server/issues"
+  },
+  "homepage": "https://github.com/nuntjw/heroes-server#readme",
+  "dependencies": {
+    "async": "^2.1.2",
+    "bignumber.js": "^2.4.0",
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mongojs": "^2.4.0",
+    "morgan": "^1.7.0",
+    "request": "^2.76.0",
+    "unix-timestamp": "^0.2.0"
+  }
+}
