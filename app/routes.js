@@ -9,6 +9,7 @@ const db = mongojs.connectDB()
 module.exports = (app) => {
 	app
 		.get('/', (req, res) => {
+			setHeader(res)
       res.send({"greeting": "hello, world"})
 		})
 
@@ -18,6 +19,7 @@ module.exports = (app) => {
             console.log(err)
             res.status(500).end(err)
           } else {
+						setHeader(res)
             res.json(heroes)
           }
       })
@@ -29,6 +31,7 @@ module.exports = (app) => {
           console.log(err)
           res.status(500).end(err)
         } else {
+					setHeader(res)
           res.json(hero)
         }
       })
@@ -43,4 +46,11 @@ module.exports = (app) => {
 		.get('*', (req, res) => {
 			res.send('PAGE NOT FOUND')
 		})
+
+
+		////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////
+		function setHeader(res) {
+			res.header("Access-Control-Allow-Origin", "*")
+			res.header("Access-Control-Allow-Headers", "X-Requested-With")
+		}
 }
