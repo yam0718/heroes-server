@@ -11,18 +11,15 @@ const local = mongojs.connectDB('local')
 module.exports = (app) => {
 	app
 		.get('/', (req, res) => {
-			setHeader(res)
-      res.send({"greeting": "hello, world"})
+      respJSON(200, {"greeting": "hello, world"}, res)
 		})
 
     .get('/heroes', (req, res) => {
       db.heroes.find({}, (err, heroes) => {
           if (err) {
-            console.log(err)
-            res.status(500).end(err)
+						respJSON(500, err, res)
           } else {
-						setHeader(res)
-            res.json(heroes)
+            respJSON(200, heroes, res)
           }
       })
     })
@@ -30,85 +27,30 @@ module.exports = (app) => {
     .get('/heroes/:id', (req, res) => {
       db.heroes.findOne({'id': parseInt(req.params.id)}, (err, hero) => {
         if (err) {
-          console.log(err)
-          res.status(500).end(err)
+          respJSON(500, err, res)
         } else {
-					setHeader(res)
-          res.json(hero)
+          respJSON(200, hero, res)
         }
       })
     })
 
-		// .get('/deploy/db', (req, res) => {
-		// 	local.heroes.find({}, (err, heroes) => {
-		// 		if (err) {
-		// 			return res.status(500).json({'status': 'error'})
-		// 		} else {
-		// 			db.heroes.save(heroes, ()=>{
-		// 				console.log('---ok')
-		// 			})
-		// 			return res.json(heroes)
-		// 		}
-		// 	})
-		// })
-
-		// .get('/config', (req, res) => {
-		// 	opendota.getHeroesStat((err, heroes) => {
-		// 		if (err) {
-		// 			console.log(err)
-		// 			res.status(500).json({'error': err})
-		// 		} else {
-		// 			async_.forEach(heroes, function loop(hero, callback) {
-		// 					delete hero.localized_name
-		// 					delete hero.attack_type
-		// 					delete hero.img
-		// 					local.heroes.findOne({'id': hero.id}, (err, localHero) => {
-		// 						if (err) {
-		// 							console.log(err)
-		// 						} else {
-		// 							let temp = Object.assign(hero, localHero)
-		// 							// console.log(temp)
-		// 							temp.icon = 'https://api.opendota.com' + temp.icon
-		// 							delete temp.base_damage_min
-		// 							delete temp.base_damage_max
-		// 							delete temp.str_per_level
-		// 							delete temp.agi_per_level
-		// 							delete temp.int_per_level
-		// 							db.heroes.update({'id': temp.id}, {'$set': temp}, () => {
-		// 								console.log(temp.id + '  --ok')
-		// 								callback()
-		// 							})
-		// 						}
-		// 					})
-		// 				}, function done(err) {
-		// 					console.log('all done')
-		// 				})
-		// 			res.json(heroes)
-		// 		}
-		// 	})
-		// })
-
-		// .get('/db/sort', (req, res) => {
-		// 	db.heroes.find({}).sort({'id': 1}, (err, heroes) => {
-		// 		if (err) {
-		// 			res.json({'status': err})
-		// 		} else {
-		// 			local.heroes_temp.save(heroes, ()=>{
-		// 				console.log('ok')
-		// 			})
-		// 			res.json(heroes)
-		// 		}
-		// 	})
-		// })
+		.get('/test', async (req, res, next) => {
+			try {
+			  let stat = await opendota.getHeroesStat()
+				respJSON(200, stat, res)
+			} catch (err) {
+				respJSON(500, err, res)
+			}
+		})
 
     .post('/auth', (req, res) => {
       console.log(req.body)
       // console.log('username = ' + req.body.username + ', password = ' + req.body.password)
-      res.send('here')
+      res.send('auth')
     })
 
 		.get('*', (req, res) => {
-			res.send('PAGE NOT FOUND')
+			res.redirect('/')
 		})
 
 
@@ -116,5 +58,15 @@ module.exports = (app) => {
 		function setHeader(res) {
 			res.header("Access-Control-Allow-Origin", "*")
 			res.header("Access-Control-Allow-Headers", "X-Requested-With")
+		}
+
+		function respJSON(status, data, res) {
+			setHeader(res)
+			if (status === 200) {
+				res.status(200).json(data)
+			} else if (status === 500) {
+				res.status(500).json(data)
+			}
+
 		}
 }
