@@ -1,8 +1,6 @@
 //var steamAPI = '6BF9A23760C89D6EA810AD69C819549E'
-const request = require('request')
 const timestamp = require('unix-timestamp')
 const mongojs = require('./../config/db.js')
-const async_ = require("async")
 const opendota = require('./models/opendota.js')
 const steamAPI = require('./models/steamAPI.js')
 
@@ -11,11 +9,11 @@ const local = mongojs.connectDB('local')
 
 module.exports = (app) => {
 	app
-		.get('/', (req, res, next) => {
+		.get('/', (req, res) => {
       respJSON(200, {"greeting": "hello, world"}, res)
 		})
 
-    .get('/heroes', (req, res, next) => {
+    .get('/heroes', (req, res) => {
       db.heroes.find({}, (err, heroes) => {
           if (err) {
 						respJSON(500, err, res)
@@ -25,7 +23,7 @@ module.exports = (app) => {
       })
     })
 
-    .get('/heroes/:id', (req, res, next) => {
+    .get('/heroes/:id', (req, res) => {
       db.heroes.findOne({'id': parseInt(req.params.id)}, (err, hero) => {
         if (err) {
           respJSON(500, err, res)
@@ -35,22 +33,22 @@ module.exports = (app) => {
       })
     })
 
-		.get('/test', async (req, res, next) => {
+		.get('/test', async (req, res) => {
 			try {
-				let wl = await opendota.getPlayer('2131', {'test': 1, 'test2': 2})
-				respJSON(200, wl, res)
+				let matches = await steamAPI.getSteamID('nunt504')
+				respJSON(200, matches, res)
 			} catch (err) {
 				respJSON(500, err, res)
 			}
 		})
 
-    .post('/auth', (req, res, next) => {
+    .post('/auth', (req, res) => {
       console.log(req.body)
       // console.log('username = ' + req.body.username + ', password = ' + req.body.password)
       res.send('auth')
     })
 
-		.get('*', (req, res, next) => {
+		.get('*', (req, res) => {
 			res.redirect('/')
 		})
 
@@ -63,11 +61,6 @@ module.exports = (app) => {
 
 		function respJSON(status, data, res) {
 			setHeader(res)
-			if (status === 200) {
-				res.status(200).json(data)
-			} else if (status === 500) {
-				res.status(500).json(data)
-			}
-
+			res.status(status).json(data)
 		}
 }
