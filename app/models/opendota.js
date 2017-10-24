@@ -203,5 +203,5 @@ function convert32To64(steam34) {
 	return x.c[0]
 }
 
-// export functions //
+
 module.exports = exported
